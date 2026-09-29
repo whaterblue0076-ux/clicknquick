@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-KGKJB9WX8M"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-KGKJB9WX8M');
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Click & Quick — All Gadgets, Kitchen, Fashion & Décor, One Click Away</title>
+<meta name="description" content="Click & Quick — curated gadgets, kitchen utensils, fashion and home décor deals from Daraz, Amazon & AliExpress, automatically matched to your country in one click.">
+<link rel="canonical" href="https://clicknquick.netlify.app/">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="container header-row">
+    <a href="index.html" class="logo">
+      <svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg"><rect width="40" height="40" rx="10" fill="#1A2140"/><path d="M13 9 L29 21.5 L21.3 23 L25.5 31.5 L21 33.5 L16.8 25 L12.5 29.5 Z" fill="#C99A44"/></svg>
+      Click <span class="amp">&amp;</span> Quick
+    </a>
+    <nav class="main-nav" id="mainNav">
+      <a href="index.html">Home</a>
+      <a href="index.html#categories">Categories</a>
+      <a href="deals.html">Deals</a>
+      <a href="about.html">About</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+    <button class="nav-toggle" id="navToggle" aria-label="Menu">☰</button>
+  </div>
+</header>
+
+<div class="geo-banner" id="geoBanner">🌍 Detecting your region…</div>
+
+<section class="hero">
+    <div class="container hero-inner">
+      <div>
+        <span class="eyebrow"><span class="bar"></span>Curated deals, matched to where you are</span>
+        <h1>Find Better Products.<br>Discover Better <span class="accent">Deals.</span></h1>
+        <p class="lead">Click & Quick helps you discover useful and popular products from trusted online marketplaces — automatically matched to the right local store for you.</p>
+        <div class="hero-ctas">
+          <a href="index.html#categories" class="btn btn-primary">Explore Products</a>
+          <a href="about.html" class="btn btn-ghost">How It Works</a>
+        </div>
+      </div>
+      <div class="click-stage">
+        <div class="click-card">
+          <div class="tag-icon">🎧</div>
+          <h4>Wireless Earbuds</h4>
+          <div class="price-row"><span class="now">Rs 599</span></div>
+          <span class="store-pill">via Daraz</span>
+          <div class="cursor-badge">👆</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="trust-strip">
+    <div class="container">
+      <span>✅ Verified Deals</span>
+      <span>🛒 Daraz, Amazon &amp; AliExpress</span>
+      <span>📍 Auto-matched to your country</span>
+      <span>⚡ One-Click Checkout</span>
+    </div>
+  </div>
+
+  <section class="filters-section" id="categories">
+    <div class="container">
+      <div class="section-head">
+        <span class="kicker">Browse</span>
+        <h2>Shop by Category</h2>
+      </div>
+      <div class="category-grid" id="categoryGrid"></div>
+    </div>
+  </section>
+
+  <section class="row-section">
+    <div class="container">
+      <div class="section-head">
+        <span class="kicker">Hot Right Now</span>
+        <h2>Trending Products</h2>
+      </div>
+      <div class="row-scroll" id="trendingRow"></div>
+    </div>
+  </section>
+
+  <section class="row-section">
+    <div class="container">
+      <div class="section-head">
+        <span class="kicker">Highly Rated</span>
+        <h2>Popular Picks</h2>
+      </div>
+      <div class="row-scroll" id="popularRow"></div>
+    </div>
+  </section>
+
+  <section class="row-section">
+    <div class="container">
+      <div class="section-head">
+        <span class="kicker">Save More</span>
+        <h2>Best Deals</h2>
+      </div>
+      <div class="row-scroll" id="bestDealsRow"></div>
+    </div>
+  </section>
+
+  <section class="row-section">
+    <div class="container">
+      <div class="section-head">
+        <span class="kicker">Fresh On The Site</span>
+        <h2>Recently Added</h2>
+      </div>
+      <div class="row-scroll" id="recentRow"></div>
+    </div>
+  </section>
+
+  <section class="filters-section" id="deals">
+    <div class="container">
+      <div class="section-head">
+        <span class="kicker">Today's Picks</span>
+        <h2>Browse All Deals</h2>
+      </div>
+      <div class="filter-pills" id="filterPills">
+        <button class="pill active" data-filter="all">All</button>
+        <button class="pill" data-filter="electronics">Electronics</button>
+        <button class="pill" data-filter="mobile-accessories">Mobile Accessories</button>
+        <button class="pill" data-filter="computers-accessories">Computers &amp; Accessories</button>
+        <button class="pill" data-filter="fashion">Fashion</button>
+        <button class="pill" data-filter="shoes">Shoes</button>
+        <button class="pill" data-filter="beauty-personal-care">Beauty &amp; Personal Care</button>
+        <button class="pill" data-filter="home-kitchen">Home &amp; Kitchen</button>
+        <button class="pill" data-filter="appliances">Appliances</button>
+        <button class="pill" data-filter="baby-kids">Baby &amp; Kids</button>
+        <button class="pill" data-filter="health-fitness">Health &amp; Fitness</button>
+        <button class="pill" data-filter="sports-outdoors">Sports &amp; Outdoors</button>
+        <button class="pill" data-filter="automotive">Automotive</button>
+        <button class="pill" data-filter="tools-home-improvement">Tools &amp; Home Improvement</button>
+        <button class="pill" data-filter="pet-supplies">Pet Supplies</button>
+        <button class="pill" data-filter="travel-accessories">Travel Accessories</button>
+        <button class="pill" data-filter="office-stationery">Office &amp; Stationery</button>
+        <button class="pill" data-filter="grocery-daily-essentials">Grocery &amp; Daily Essentials</button>
+        <button class="pill" data-filter="best-deals">Best Deals</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="grid-section">
+    <div class="container">
+      <div class="product-grid" id="productGrid"></div>
+    </div>
+  </section>
+
+  <section class="about-section">
+    <div class="container about-grid">
+      <div>
+        <h3>How Click & Quick works</h3>
+        <p>We browse Daraz, Amazon, and AliExpress so you don't have to. We detect your country and land you on the right local store automatically — and if a pick isn't available where you are, we show you an honestly-labelled alternative instead of a dead link.</p>
+      </div>
+      <div>
+        <h3>Affiliate disclosure</h3>
+        <p>Click & Quick may earn a small commission when you buy through our links, at no extra cost to you. We only feature products we believe offer genuine value.</p>
+      </div>
+    </div>
+  </section>
+
+<footer>
+  <div class="container">
+    <div class="footer-row">
+      <span class="footer-logo">Click &amp; Quick</span>
+      <div class="footer-links">
+        <a href="index.html">Home</a>
+        <a href="deals.html">Deals</a>
+        <a href="about.html">About</a>
+        <a href="contact.html">Contact</a>
+        <a href="affiliate-disclosure.html">Affiliate Disclosure</a>
+        <a href="privacy.html">Privacy</a>
+        <a href="terms.html">Terms</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Click &amp; Quick. All rights reserved.</span>
+      <span>Made with ♡ in Pakistan</span>
+    </div>
+  </div>
+</footer>
+
+
+<script src="products.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
