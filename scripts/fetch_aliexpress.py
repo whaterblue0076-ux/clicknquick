@@ -59,7 +59,7 @@ def extract_products(resp):
     """Returns the product list from a hotproduct.query response (or raises with the API error text)."""
     if "error_response" in resp:
         raise RuntimeError("API error: " + json.dumps(resp["error_response"])[:400])
-    body = resp.get("aliexpress_affiliate_hotproduct_query_response")
+    body = resp.get("aliexpress_affiliate_product_query_response")
     if not body:
         raise RuntimeError("Unexpected response: " + json.dumps(resp)[:400])
     result = body.get("resp_result", {})
@@ -158,7 +158,7 @@ def main():
         if len(picked) >= MAX_NEW:
             break
         try:
-            resp = call_api("aliexpress.affiliate.hotproduct.query", {
+            resp = call_api("aliexpress.affiliate.product.query", {
                 "keywords": kw, "page_no": 1, "page_size": 40, "sort": "LAST_VOLUME_DESC",
                 "target_currency": "PKR", "target_language": "EN", "ship_to_country": "PK",
                 "tracking_id": "default", "platform_product_type": "ALL"}, key, secret)
