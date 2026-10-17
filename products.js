@@ -574,7 +574,7 @@ function resolveOffer(product, storeType){
   const direct = product.stores[storeType];
   if (direct && direct.available) return { product, store:direct, storeType, kind:"exact" };
 
-  const altSameStore = PRODUCTS.find(p => p.id !== product.id && p.category === product.category && p.stores[storeType]?.available);
+  const altSameStore = (storeType !== "aliexpress" && product.stores.aliexpress?.available) ? null : PRODUCTS.find(p => p.id !== product.id && p.category === product.category && p.stores[storeType]?.available);
   if (altSameStore) return { product:altSameStore, store:altSameStore.stores[storeType], storeType, kind:"alternate" };
 
   if (storeType !== "aliexpress" && product.stores.aliexpress?.available)
