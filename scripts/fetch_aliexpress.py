@@ -147,7 +147,8 @@ def existing_ids(root=ROOT):
 
 def main():
     dry = "--dry-run" in sys.argv
-    key, secret = os.environ.get("ALI_APP_KEY"), os.environ.get("ALI_APP_SECRET")
+    key, secret = (os.environ.get("ALI_APP_KEY") or "").strip(), (os.environ.get("ALI_APP_SECRET") or "").strip()
+    print("Key length: %d, secret length: %d" % (len(key), len(secret)))
     if not key or not secret:
         sys.exit("Missing ALI_APP_KEY / ALI_APP_SECRET environment variables.")
     have = existing_ids()
@@ -163,7 +164,10 @@ def main():
                 "tracking_id": "default", "platform_product_type": "ALL"}, key, secret)
             prods = extract_products(resp)
         except Exception as e:
-            print("Search '%s' failed: %s" % (kw, e)); continue
+            print("Search '%s' failed: %s" % (kw, e))
+            if "Signature" in str(e):
+                break
+            continue
         taken = 0
         for p in prods:
             pid = "ali-" + str(p.get("product_id"))
