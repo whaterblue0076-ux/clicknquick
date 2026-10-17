@@ -63,7 +63,7 @@ function buildCard(offerInfo){
         <p class="card-why"><b>Why we recommend it:</b> ${shown.why || 'A solid, well-reviewed pick in this category.'}</p>
         <span class="stars">${starString(shown.rating)} <span style="color:var(--muted)">(${shown.rating})</span></span>
         ${hasVerifiedPrice
-          ? `<div class="price-line"><span class="now">${store.price}</span>${store.oldPrice ? `<span class="old">${store.oldPrice}</span>` : ''}${discount ? `<span class="discount-badge">-${discount}%</span>` : ''}</div>`
+          ? `<div class="price-line"><span class="now">${store.price}</span>${store.oldPrice ? `<span class="old">${store.oldPrice}</span>` : ''}${discount ? `<span class="discount-badge">-${discount}%</span>` : ''}</div><p class="price-unverified">Price may change — check current price on ${storeLabel}.</p>`
           : `<p class="price-unverified">Price shown on ${storeLabel} — check current price before buying.</p>`}
         ${offerInfo.kind === "international" ? `<p class="card-note" style="color:var(--gold-deep);">Not sold locally — ships internationally via ${storeLabel}. International shipping/import charges may apply — check before buying.</p>` : ''}
         <span class="store-tag">via ${storeLabel}</span>
@@ -251,7 +251,7 @@ function initProductPage(){
 
   document.getElementById("pdCategory").innerHTML = `<a href="category-${shown.category}.html" style="color:inherit;">${catLabel(shown.category)}</a>`;
   document.getElementById("pdTitle").textContent = shown.name;
-  document.getElementById("pdStars").innerHTML = `${starString(shown.rating)} <span style="color:var(--muted)">(${shown.rating})</span>`;
+  document.getElementById("pdStars").innerHTML = (shown.rating != null) ? `${starString(shown.rating)} <span style="color:var(--muted)">(${shown.rating})</span>` : "";
   const images = (shown.gallery && shown.gallery.length) ? shown.gallery : (shown.image ? [shown.image] : []);
   document.getElementById("pdMainImage").innerHTML = images.length ? `<img src="${images[0]}" alt="${shown.name}" id="pdMainImg">` : `<span>${shown.icon}</span>`;
   document.getElementById("pdThumbs").innerHTML = images.map((src, i) => `<img src="${src}" class="${i === 0 ? 'active' : ''}" data-idx="${i}" alt="${shown.name} thumbnail ${i + 1}">`).join('');
@@ -266,7 +266,7 @@ function initProductPage(){
     ? `Sold via <b>${storeLabel}</b>${details?.availability ? ` — ${details.availability}` : ""}${offer?.kind === "international" ? ` <span style="color:var(--gold-deep);font-weight:700;">— not sold locally, ships internationally</span>` : ""}`
     : `Not currently available in your region.`;
   document.getElementById("pdPriceBlock").innerHTML = (hasVerifiedPrice
-    ? `<div class="price-line" style="margin:10px 0;"><span class="now" style="font-size:1.4rem;">${store.price}</span>${store.oldPrice ? `<span class="old">${store.oldPrice}</span>` : ''}${discountPercent(store.price, store.oldPrice) ? `<span class="discount-badge">-${discountPercent(store.price, store.oldPrice)}%</span>` : ''}</div>`
+    ? `<div class="price-line" style="margin:10px 0;"><span class="now" style="font-size:1.4rem;">${store.price}</span>${store.oldPrice ? `<span class="old">${store.oldPrice}</span>` : ''}${discountPercent(store.price, store.oldPrice) ? `<span class="discount-badge">-${discountPercent(store.price, store.oldPrice)}%</span>` : ''}</div><p class="price-unverified" style="margin:0 0 10px;">Price may change — check current price on ${storeLabel || "the marketplace"} before buying.</p>`
     : `<p class="price-unverified" style="margin:10px 0;">Price not independently verified — check the current price on ${storeLabel || "the marketplace"} before buying.</p>`)
     + (offer?.kind === "international" ? `<p class="price-unverified">International shipping/import charges may apply — check the total cost on ${storeLabel} before buying.</p>` : '');
   document.getElementById("pdSummary").textContent = shown.desc;
@@ -363,9 +363,9 @@ function initContactForm(){
     const name = document.getElementById('name').value;
     const email = document.getElementById('email').value;
     const message = document.getElementById('message').value;
-    const subject = encodeURIComponent('Message from ' + name + ' via Click & Quick');
+    const subject = encodeURIComponent('Message from ' + name + ' via ClicknQuick');
     const body = encodeURIComponent(message + '\n\nFrom: ' + name + ' (' + email + ')');
-    window.location.href = `mailto:hello@clickandquick.com?subject=${subject}&body=${body}`;
+    window.location.href = `mailto:clickquick320@gmail.com?subject=${subject}&body=${body}`;
   });
 }
 

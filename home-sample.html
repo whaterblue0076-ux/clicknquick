@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>ClicknQuick - Homepage Sample</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#1b1340;--muted:#6b6790;--p1:#6c3bff;--p2:#ff3d81;--p3:#ff9a3d;--bg:#fbf9ff;--card:#fff;--line:#ece8fa}
+*{box-sizing:border-box}html,body{margin:0}body{font-family:Inter,system-ui,sans-serif;background:var(--bg);color:var(--ink)}
+a{text-decoration:none;color:inherit}.wrap{max-width:1180px;margin:0 auto;padding:0 18px}
+header{position:sticky;top:0;z-index:20;background:linear-gradient(90deg,#1b1340,#3a1c8f);color:#fff}
+.hrow{display:flex;align-items:center;gap:18px;height:66px}
+.logo{display:flex;align-items:center;gap:10px;font:800 1.25rem Sora,sans-serif}
+.logo i{width:36px;height:36px;border-radius:11px;background:linear-gradient(135deg,var(--p3),var(--p2));display:grid;place-items:center;font-style:normal}
+nav{margin-left:auto;display:flex;gap:22px;font-weight:600;font-size:.95rem}nav a{opacity:.85}nav a:hover{opacity:1}
+.hero{background:linear-gradient(120deg,#6c3bff 0%,#c13cff 38%,#ff3d81 72%,#ff9a3d 100%);color:#fff;position:relative;overflow:hidden}
+.hero:before,.hero:after{content:"";position:absolute;border-radius:50%;background:rgba(255,255,255,.12)}
+.hero:before{width:420px;height:420px;right:-90px;top:-120px}.hero:after{width:260px;height:260px;left:-80px;bottom:-130px}
+.hgrid{display:grid;grid-template-columns:1.1fr .9fr;gap:30px;align-items:center;padding:56px 0 64px;position:relative}
+.kick{display:inline-block;background:rgba(255,255,255,.2);padding:7px 14px;border-radius:99px;font-weight:700;font-size:.82rem;letter-spacing:.04em}
+h1{font:800 clamp(2rem,4.6vw,3.4rem)/1.08 Sora,sans-serif;margin:16px 0 14px}
+h1 em{font-style:normal;color:#ffe27a}
+.lead{font-size:1.08rem;line-height:1.6;opacity:.95;max-width:520px}
+.btns{display:flex;gap:12px;margin-top:24px;flex-wrap:wrap}
+.btn{padding:14px 26px;border-radius:14px;font-weight:700}.b1{background:#fff;color:#6c3bff;box-shadow:0 10px 24px rgba(0,0,0,.18)}.b2{border:2px solid rgba(255,255,255,.7)}
+.stack{position:relative;height:340px}
+.stack .pc{position:absolute;background:#fff;border-radius:22px;padding:10px;box-shadow:0 18px 40px rgba(40,10,90,.35);width:190px}
+.stack .pc img{width:100%;height:170px;object-fit:contain;border-radius:14px;background:#fff}
+.stack .pc b{display:block;font-size:.85rem;color:var(--ink);margin:6px 4px 0}.stack .pc span{display:block;font-size:.8rem;color:#e02f6b;font-weight:800;margin:0 4px 4px}
+.pc.a{left:6%;top:30px;transform:rotate(-7deg)}.pc.b{left:38%;top:0;transform:rotate(3deg);z-index:2}.pc.c{right:2%;top:60px;transform:rotate(8deg)}
+.plat{background:#fff;border-bottom:1px solid var(--line)}
+.plat .wrap{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;padding:16px 18px}
+.chip{padding:9px 18px;border-radius:99px;font-weight:700;font-size:.9rem;color:#fff}
+.c1{background:#ff9900;color:#1b1340}.c2{background:#f85606}.c3{background:#e62e04}.c4{background:#12b886}
+section{padding:46px 0 10px}
+.sh{display:flex;align-items:end;justify-content:space-between;gap:10px;margin-bottom:20px}
+.sh h2{font:800 1.7rem Sora,sans-serif;margin:0}.sh small{color:var(--p1);font-weight:700}
+.cats{display:grid;grid-template-columns:repeat(6,1fr);gap:14px}
+.cat{border-radius:20px;padding:20px 12px;text-align:center;color:#fff;font-weight:700;font-size:.9rem;transition:transform .2s;box-shadow:0 8px 18px rgba(60,20,120,.14)}
+.cat:hover{transform:translateY(-5px)}.cat span{display:block;font-size:2rem;margin-bottom:8px}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+.card{background:var(--card);border-radius:20px;overflow:hidden;border:1px solid var(--line);transition:transform .2s,box-shadow .2s;display:flex;flex-direction:column}
+.card:hover{transform:translateY(-5px);box-shadow:0 16px 34px rgba(80,40,160,.16)}
+.im{aspect-ratio:1/1;background:#fff;display:grid;place-items:center;position:relative;font-size:3rem}.im img{width:100%;height:100%;object-fit:contain}
+.st{position:absolute;left:10px;top:10px;background:linear-gradient(90deg,var(--p1),var(--p2));color:#fff;font-size:.72rem;font-weight:700;padding:5px 10px;border-radius:99px}
+.cb{padding:14px;display:flex;flex-direction:column;gap:6px;flex:1}.cb h3{font-size:.95rem;margin:0;line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.rt{color:#f5a300;font-size:.82rem;font-weight:700}.pr{font:800 1.2rem Sora,sans-serif;color:#e02f6b}.pr small{font:500 .75rem Inter;color:var(--muted)}
+.go{margin-top:auto;text-align:center;padding:11px;border-radius:12px;font-weight:700;color:#fff;background:linear-gradient(90deg,var(--p1),var(--p2))}
+.why{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.w{border-radius:20px;padding:22px;color:#fff}.w b{display:block;font:800 1.05rem Sora;margin:6px 0}.w p{margin:0;font-size:.88rem;line-height:1.5;opacity:.95}.w span{font-size:1.8rem}
+.w:nth-child(1){background:linear-gradient(135deg,#6c3bff,#9b6bff)}.w:nth-child(2){background:linear-gradient(135deg,#ff3d81,#ff7aa8)}
+.w:nth-child(3){background:linear-gradient(135deg,#ff9a3d,#ffc15e)}.w:nth-child(4){background:linear-gradient(135deg,#12b886,#4fd6ad)}
+footer{margin-top:50px;background:#1b1340;color:#cfc9ee;padding:34px 0;font-size:.9rem}footer .wrap{display:flex;gap:18px;flex-wrap:wrap;justify-content:space-between}
+@media(max-width:900px){.hgrid{grid-template-columns:1fr;padding:38px 0 44px}.stack{height:300px}.cats{grid-template-columns:repeat(3,1fr)}.grid{grid-template-columns:repeat(2,1fr)}.why{grid-template-columns:repeat(2,1fr)}nav{gap:14px;font-size:.85rem}}
+@media(max-width:520px){.cats{grid-template-columns:repeat(2,1fr)}nav a:nth-child(n+3){display:none}.stack .pc{width:150px}.stack .pc img{height:120px}.sh h2{font-size:1.35rem}}
+</style></head><body>
+<header><div class="wrap hrow"><a class="logo" href="index.html"><i>⚡</i>ClicknQuick</a>
+<nav><a href="index.html">Home</a><a href="index.html#categories">Categories</a><a href="deals.html">Deals</a><a href="about.html">About</a><a href="contact.html">Contact</a></nav></div></header>
+<div class="hero"><div class="wrap hgrid"><div>
+<span class="kick">⚡ ONE CLICK. RIGHT STORE.</span>
+<h1>Gadgets, kitchen, fashion &amp; more — <em>sab ek jagah</em></h1>
+<p class="lead">Amazon, Daraz aur AliExpress ke popular products, aap ke mulk ke hisaab se sahi store par. Asli ratings, koi nakli discount nahi.</p>
+<div class="btns"><a class="btn b1" href="#cats">Shop Now</a><a class="btn b2" href="about.html">How it works</a></div></div>
+<div class="stack" id="stack"></div></div></div>
+<div class="plat"><div class="wrap"><span class="chip c1">Amazon</span><span class="chip c2">Daraz</span><span class="chip c3">AliExpress</span><span class="chip c4">✓ Auto-matched to your country</span></div></div>
+<section id="cats"><div class="wrap"><div class="sh"><h2>Shop by Category</h2><small>18 categories</small></div><div class="cats" id="cats"></div></div></section>
+<section><div class="wrap"><div class="sh"><h2>🔥 Hot Picks</h2><a href="deals.html"><small>See all →</small></a></div><div class="grid" id="hot"></div></div></section>
+<section><div class="wrap"><div class="sh"><h2>✨ Just Added</h2><a href="deals.html"><small>See all →</small></a></div><div class="grid" id="new"></div></div></section>
+<section><div class="wrap"><div class="why">
+<div class="w"><span>✅</span><b>Asli ratings</b><p>Rating aur sold ki tadad wohi jo store par dikhti hai.</p></div>
+<div class="w"><span>🚫</span><b>Nakli discount nahi</b><p>Price badal sakti hai, hamesha store par check karein.</p></div>
+<div class="w"><span>📍</span><b>Sahi store</b><p>Pakistan mein Daraz, baqi mulkon mein Amazon ya AliExpress.</p></div>
+<div class="w"><span>⚡</span><b>Ek click</b><p>Dhoondne ki jagah seedha product tak.</p></div></div></div></section>
+<footer><div class="wrap"><div>© ClicknQuick</div><div>Affiliate disclosure: hum qualifying purchases par commission kama sakte hain, aap ko koi extra kharcha nahi.</div></div></footer>
+<script src="products.js"></script>
+<script>
+const g=id=>document.getElementById(id),esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const offer=p=>Object.entries(p.stores||{}).find(([,s])=>s&&s.available);
+const hasImg=p=>p.image;
+function card(p){const o=offer(p);const store=o?o[0]:"";const pr=o&&o[1].verified!==false&&o[1].price?o[1].price:null;
+ return `<a class="card" href="product-${p.id}.html"><div class="im">${p.image?`<img src="${esc(p.image)}" alt="${esc(p.name)}" loading="lazy">`:p.icon}${store?`<span class="st">${store[0].toUpperCase()+store.slice(1)}</span>`:""}</div>
+ <div class="cb"><h3>${esc(p.name)}</h3>${p.rating?`<div class="rt">★ ${p.rating}</div>`:""}<div class="pr">${pr||"<small>Check current price</small>"}</div><div class="go">View Deal →</div></div></a>`}
+const withImg=PRODUCTS.filter(hasImg);
+g("stack").innerHTML=["a","b","c"].map((k,i)=>{const p=withImg.filter(x=>x.id.startsWith("daraz-")||true)[[0,5,2][i]];const o=offer(p);return `<div class="pc ${k}"><img src="${esc(p.image)}" alt=""><b>${esc(p.name.slice(0,26))}</b><span>${o&&o[1].price?o[1].price:""}</span></div>`}).join("");
+const cols=[["#6c3bff","#9b6bff"],["#ff3d81","#ff7aa8"],["#ff9a3d","#ffc15e"],["#12b886","#4fd6ad"],["#3b82f6","#7fb2ff"],["#a855f7","#d093ff"]];
+g("cats").innerHTML=CATEGORIES.map((c,i)=>{const k=cols[i%6];return `<a class="cat" href="category-${c.slug}.html" style="background:linear-gradient(135deg,${k[0]},${k[1]})"><span>${c.icon}</span>${esc(c.name)}</a>`}).join("");
+g("hot").innerHTML=[...withImg].sort((a,b)=>(b.rating||0)-(a.rating||0)).slice(0,8).map(card).join("");
+g("new").innerHTML=[...PRODUCTS].sort((a,b)=>(b.addedOrder||0)-(a.addedOrder||0)).slice(0,8).map(card).join("");
+</script></body></html>

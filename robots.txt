@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://clicknquick.netlify.app/sitemap.xml
