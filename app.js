@@ -38,6 +38,12 @@ function wireWishButtons(container){
 /* ============ PRODUCT CARD ============ */
 /** The product image/title link to that product's own page (product-<id>.html).
     The separate "View Deal" button is untouched and always goes straight to the real affiliate link. */
+function cqImgFail(img){
+  const box = img.parentNode; if(!box) return;
+  box.classList.add('noimg');
+  const sp = document.createElement('span'); sp.className = 'noimg-icon'; sp.textContent = img.getAttribute('data-icon') || '🛍️';
+  img.replaceWith(sp);
+}
 function buildCard(offerInfo){
   const shown = offerInfo.product;
   const store = offerInfo.store;
@@ -48,26 +54,27 @@ function buildCard(offerInfo){
   const wished = isWishlisted(shown.id);
   const href = `product-${shown.id}.html`;
 
+  const soldMatch = (shown.why || "").match(/([\d,]+\+?)\s+sold/i);
+  const sold = soldMatch ? `${soldMatch[1]} sold` : "";
+  const ratingTxt = (shown.rating != null) ? `<span class="m-rate">★ ${shown.rating}</span>` : "";
+  const meta = [ratingTxt, sold ? `<span class="m-sold">${sold}</span>` : ""].filter(Boolean).join('<span class="m-dot">·</span>');
+
   return `
     <div class="card${shown.pinned ? ' pinned' : ''}">
       <a href="${href}" class="card-media" style="cursor:pointer;">
         ${shown.badge ? `<span class="card-badge">${shown.badge}</span>` : ""}
         ${fallbackLabel ? `<span class="card-fallback">${fallbackLabel}</span>` : ""}
-        ${shown.image ? `<img src="${shown.image}" alt="${shown.name}" loading="lazy">` : `<span>${shown.icon}</span>`}
+        ${shown.image ? `<img src="${shown.image}" alt="" loading="lazy" data-icon="${shown.icon}" onerror="cqImgFail(this)">` : `<span class="noimg-icon">${shown.icon}</span>`}
       </a>
       <button class="wish-btn ${wished ? 'active' : ''}" data-wish-id="${shown.id}" aria-label="Save to wishlist" title="Save to wishlist">♥</button>
       <div class="card-body">
-        <span class="card-cat">${catLabel(shown.category)}${shown.pinned ? ' · <span style="color:#2b6cff;font-weight:700;">Featured Pick</span>' : ''}</span>
-        <a href="${href}" style="color:inherit;"><h3>${shown.name}</h3></a>
-        <p class="desc">${shown.desc}</p>
-        <p class="card-why"><b>Why we recommend it:</b> ${shown.why || 'A solid, well-reviewed pick in this category.'}</p>
-        <span class="stars">${starString(shown.rating)} <span style="color:var(--muted)">(${shown.rating})</span></span>
+        <a href="${href}" style="color:inherit;"><h3 class="card-title">${shown.name}</h3></a>
+        ${meta ? `<div class="card-meta">${meta}</div>` : ""}
         ${hasVerifiedPrice
-          ? `<div class="price-line"><span class="now">${store.price}</span>${store.oldPrice ? `<span class="old">${store.oldPrice}</span>` : ''}${discount ? `<span class="discount-badge">-${discount}%</span>` : ''}</div><p class="price-unverified">Price may change — check current price on ${storeLabel}.</p>`
-          : `<p class="price-unverified">Price shown on ${storeLabel} — check current price before buying.</p>`}
-        ${offerInfo.kind === "international" ? `<p class="card-note" style="color:var(--gold-deep);">Not sold locally — ships internationally via ${storeLabel}. International shipping/import charges may apply — check before buying.</p>` : ''}
+          ? `<div class="price-line"><span class="now">${store.price}</span>${store.oldPrice ? `<span class="old">${store.oldPrice}</span>` : ''}${discount ? `<span class="discount-badge">-${discount}%</span>` : ''}</div><p class="price-tiny">Check current price on ${storeLabel}</p>`
+          : `<p class="price-unverified">Check price on ${storeLabel}</p>`}
         <span class="store-tag">via ${storeLabel}</span>
-        <a class="card-cta" href="${store.url}" target="_blank" rel="nofollow sponsored noopener">${shown.pinned ? 'View Deal & More Options →' : 'View Deal →'}</a>
+        <a class="card-cta" href="${store.url}" target="_blank" rel="nofollow sponsored noopener">${shown.pinned ? 'View Deal & More →' : 'View Deal →'}</a>
       </div>
     </div>`;
 }
@@ -120,7 +127,7 @@ function renderCuratedRows(){
     const offer = resolveOffer(p, window.CQ_STORE_TYPE);
     return offer && offer.store.verified !== false && offer.store.oldPrice;
   }));
-  renderRow('recentRow', PRODUCTS.slice(0, 4));
+  renderRow("recentRow", PRODUCTS.slice(0, 5));
 }
 
 /* ============ HOMEPAGE: "Browse All Deals" grid + filter pills ============ */
