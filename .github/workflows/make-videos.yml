@@ -1,0 +1,41 @@
+name: Make product videos
+
+# Manual button only. It reads products.js and never changes any site file.
+# Output is a downloadable zip under the run's "Artifacts" section.
+on:
+  workflow_dispatch:
+    inputs:
+      ids:
+        description: "Product ids, comma separated (leave empty to use the newest products)"
+        required: false
+        default: ""
+      latest:
+        description: "If ids is empty: how many newest products"
+        required: false
+        default: "3"
+      langs:
+        description: "Video languages: en,ur (both) or ur or en"
+        required: false
+        default: "en,ur"
+
+jobs:
+  videos:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install tools (Urdu fonts + python packages)
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y fonts-noto-core fonts-hosny-amiri
+          pip install edge-tts pillow requests arabic-reshaper python-bidi fonttools
+      - name: Make videos
+        run: python tools/make_video.py --ids "${{ github.event.inputs.ids }}" --latest "${{ github.event.inputs.latest }}" --langs "${{ github.event.inputs.langs }}" --out video-output
+      - uses: actions/upload-artifact@v4
+        with:
+          name: product-videos
+          path: video-output/
