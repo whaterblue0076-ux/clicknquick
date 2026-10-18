@@ -22,7 +22,8 @@ MIN_SOLD = 1000         # honesty filter: only products with real sales
 MIN_POSITIVE = 90.0     # honesty filter: % positive feedback
 MIN_PRICE_PKR = 150     # skip junk/accessory listings
 
-# (search keywords, our category slug). Edit freely.
+# (search keywords, our category slug). Edit freely. A mix of cheap, mid and premium items,
+# spread over many categories. Each run starts at a different place in this list (rotates weekly).
 SEARCHES = [
     ("portable neck fan", "appliances"),
     ("wireless earbuds bluetooth", "electronics"),
@@ -36,7 +37,26 @@ SEARCHES = [
     ("pet grooming brush", "pet-supplies"),
     ("hair clips accessories", "beauty-personal-care"),
     ("storage box organizer", "home-kitchen"),
+    ("mini projector portable", "electronics"),
+    ("massage gun deep tissue", "health-fitness"),
+    ("mechanical keyboard wireless", "computers-accessories"),
+    ("robot vacuum cleaner", "appliances"),
+    ("smart watch fitness band", "electronics"),
+    ("laptop backpack waterproof", "travel-accessories"),
+    ("cordless electric drill set", "tools-home-improvement"),
+    ("professional hair dryer", "beauty-personal-care"),
+    ("yoga mat non slip", "sports-outdoors"),
+    ("camping tent outdoor", "sports-outdoors"),
+    ("kids educational toys", "baby-kids"),
+    ("women handbag shoulder bag", "fashion"),
+    ("men running sneakers", "shoes"),
+    ("power bank 20000mah", "mobile-accessories"),
+    ("external ssd portable", "computers-accessories"),
+    ("car vacuum cleaner portable", "automotive"),
 ]
+CHEAP_MAX = 1500        # PKR  (cheap tier below this)
+PREMIUM_MIN = 5000      # PKR  (premium tier above this)
+MAX_PER_CATEGORY = 2    # per run, so one category never takes over
 
 # Listings that use famous brand names are usually imitations -> skipped (our honesty rule).
 BRAND_BLOCKLIST = ["apple", "airpods", "iphone", "samsung", "nike", "adidas", "philips", "sony", "jbl",
@@ -59,7 +79,7 @@ def extract_products(resp):
     """Returns the product list from a hotproduct.query response (or raises with the API error text)."""
     if "error_response" in resp:
         raise RuntimeError("API error: " + json.dumps(resp["error_response"])[:400])
-    body = resp.get("aliexpress_affiliate_product_query_response")
+    body = resp.get("aliexpress_affiliate_product_query_response") or resp.get("aliexpress_affiliate_hotproduct_query_response")
     if not body:
         raise RuntimeError("Unexpected response: " + json.dumps(resp)[:400])
     result = body.get("resp_result", {})
@@ -153,9 +173,12 @@ def main():
         sys.exit("Missing ALI_APP_KEY / ALI_APP_SECRET environment variables.")
     have = existing_ids()
     order = len(have) + 100
-    picked, seen = [], set()
-    for kw, cat in SEARCHES:
-        if len(picked) >= MAX_NEW:
+    week = int(time.time() // (7 * 86400))
+    shift = (week * 5) % len(SEARCHES)
+    searches = SEARCHES[shift:] + SEARCHES[:shift]          # different starting point every week
+    pool, seen = [], set()
+    for kw, cat in searches:
+        if len(pool) >= 60:
             break
         try:
             resp = call_api("aliexpress.affiliate.product.query", {
@@ -165,7 +188,7 @@ def main():
             prods = extract_products(resp)
         except Exception as e:
             print("Search '%s' failed: %s" % (kw, e))
-            if "Signature" in str(e):
+            if "Signature" in str(e) or "Permission" in str(e):
                 break
             continue
         taken = 0
@@ -173,11 +196,33 @@ def main():
             pid = "ali-" + str(p.get("product_id"))
             if pid in have or pid in seen or not good(p):
                 continue
-            order += 1
-            picked.append(to_record(p, cat, order)); seen.add(pid); taken += 1
-            if taken >= PER_SEARCH or len(picked) >= MAX_NEW:
+            seen.add(pid); pool.append((p, cat)); taken += 1
+            if taken >= PER_SEARCH:
                 break
-        print("'%s': %d new" % (kw, taken))
+        print("'%s': %d candidates" % (kw, taken))
+    # Pick a balanced mix: cheap / mid / premium in turns, never more than MAX_PER_CATEGORY per category.
+    def tier(p):
+        price = float(p.get("target_sale_price"))
+        return "cheap" if price < CHEAP_MAX else ("premium" if price >= PREMIUM_MIN else "mid")
+    buckets = {"mid": [], "cheap": [], "premium": []}
+    for p, cat in pool:
+        buckets[tier(p)].append((p, cat))
+    picked, per_cat = [], {}
+    progress = True
+    while len(picked) < MAX_NEW and progress:
+        progress = False
+        for t in ("mid", "cheap", "premium"):
+            if len(picked) >= MAX_NEW:
+                break
+            for i, (p, cat) in enumerate(buckets[t]):
+                if per_cat.get(cat, 0) < MAX_PER_CATEGORY:
+                    buckets[t].pop(i)
+                    order += 1
+                    picked.append(to_record(p, cat, order))
+                    per_cat[cat] = per_cat.get(cat, 0) + 1
+                    print("  + [%s] %s" % (t, picked[-1][1][:70]))
+                    progress = True
+                    break
     n = add_products(picked, dry=dry)
     print(("[dry-run] would add " if dry else "Added ") + str(n) + " products.")
 
