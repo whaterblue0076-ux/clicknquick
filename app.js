@@ -112,10 +112,28 @@ function renderCategoryCards(){
   }).join('');
 }
 
+/* Hide repeats: when several products resolve to the same shown product (e.g. the "similar pick"
+   substitute), show that product only once and prefer the exact match over the substitute. */
+function dedupeByOffer(list, getOffer){
+  const exact = new Set();
+  list.forEach(p => { const o = getOffer(p); if (o && o.product.id === p.id) exact.add(p.id); });
+  const seen = new Set();
+  return list.filter(p => {
+    const o = getOffer(p);
+    if (!o) return true;
+    const id = o.product.id;
+    if (id !== p.id && exact.has(id)) return false;
+    if (seen.has(id)) return false;
+    seen.add(id);
+    return true;
+  });
+}
+
 /* ============ HOMEPAGE: curated rows (Trending / Popular / Best Deals / Recently Added) ============ */
 function renderRow(containerId, products){
   const el = document.getElementById(containerId);
   if(!el) return;
+  products = dedupeByOffer(products, p => resolveOffer(p, window.CQ_STORE_TYPE));
   const offers = products.map(p => resolveOffer(p, window.CQ_STORE_TYPE)).filter(Boolean);
   el.innerHTML = offers.length ? offers.map(buildCard).join('') : `<div class="empty-state">Nothing here yet — check back soon!</div>`;
   wireWishButtons(el);
@@ -139,6 +157,7 @@ function renderProducts(filter){
   else if (filter === 'best-deals') list = PRODUCTS.filter(p => { const o = resolveOffer(p, window.CQ_STORE_TYPE); return o && o.store.verified !== false && o.store.oldPrice; });
   else list = PRODUCTS.filter(p => p.category === filter);
   list = sortPinnedFirst(list);
+  list = dedupeByOffer(list, p => resolveOffer(p, window.CQ_STORE_TYPE));
   grid.innerHTML = '';
   if(list.length === 0){ grid.innerHTML = `<div class="empty-state">No products in this category yet — check back soon!</div>`; return; }
   list.forEach(p => {
@@ -226,6 +245,7 @@ function renderCategoryGrid(){
     return (b.rating || 0) - (a.rating || 0); // popular (default)
   });
   list = sortPinnedFirst(list);
+  list = dedupeByOffer(list, p => offersByProduct.get(p.id));
 
   grid.innerHTML = "";
   if (list.length === 0){
