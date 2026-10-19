@@ -595,5 +595,21 @@ function resolveOffer(product, storeType){
   const anyStoreEntry = Object.entries(product.stores).find(([, s]) => s && s.available);
   if (anyStoreEntry) return { product, store:anyStoreEntry[1], storeType:anyStoreEntry[0], kind:(anyStoreEntry[0] === "daraz" ? "pk-only" : "international") };
 
+
   return null;
 }
+
+/* Daraz fix: har Daraz product ka asal daraz.pk page khule.
+   DCM ke deep links milen to unhein yahan product id ke saath daalna. */
+const DARAZ_DEEP = {
+  // "earbuds-pro": "DCM ka deep link",
+};
+PRODUCTS.forEach(p => {
+  const d = p.stores && p.stores.daraz;
+  if (!d || !d.available) return;
+  if (DARAZ_DEEP[p.id]) { d.url = DARAZ_DEEP[p.id]; return; }
+  try {
+    const m = d.url.match(/[?&]url=([^&]+)/);
+    if (m) d.url = decodeURIComponent(m[1]).split("?")[0];
+  } catch (e) {}
+});
