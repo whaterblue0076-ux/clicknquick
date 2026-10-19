@@ -47,7 +47,7 @@ function cqImgFail(img){
 function buildCard(offerInfo){
   const shown = offerInfo.product;
   const store = offerInfo.store;
-  const fallbackLabel = offerInfo.kind === "alternate" ? "Similar pick" : offerInfo.kind === "alternate-store" ? "Via AliExpress" : offerInfo.kind === "international" ? "Ships Internationally" : "";
+  const fallbackLabel = offerInfo.kind === "alternate" ? "Similar pick" : offerInfo.kind === "alternate-store" ? "Via AliExpress" : offerInfo.kind === "international" ? "Ships Internationally" : offerInfo.kind === "pk-only" ? "Delivers in Pakistan only" : "";
   const storeLabel = offerInfo.storeType === "daraz" ? "Daraz" : offerInfo.storeType === "amazon" ? (AMAZON_MARKETS[window.CQ_COUNTRY]?.store || "Amazon") : "AliExpress";
   const hasVerifiedPrice = store.verified !== false && !!store.price;
   const discount = hasVerifiedPrice && store.oldPrice ? discountPercent(store.price, store.oldPrice) : null;
@@ -118,7 +118,7 @@ function dedupeByOffer(list, getOffer){
   const exact = new Set();
   list.forEach(p => { const o = getOffer(p); if (o && o.product.id === p.id) exact.add(p.id); });
   const seen = new Set();
-  return list.filter(p => {
+  const out = list.filter(p => {
     const o = getOffer(p);
     if (!o) return true;
     const id = o.product.id;
@@ -127,6 +127,9 @@ function dedupeByOffer(list, getOffer){
     seen.add(id);
     return true;
   });
+  // Last resort items (Daraz-only products shown to visitors outside Pakistan) go to the very end.
+  const isPk = p => { const o = getOffer(p); return !!o && o.kind === "pk-only"; };
+  return out.filter(p => !isPk(p)).concat(out.filter(isPk));
 }
 
 /* ============ HOMEPAGE: curated rows (Trending / Popular / Best Deals / Recently Added) ============ */
@@ -290,12 +293,13 @@ function initProductPage(){
 
   const hasVerifiedPrice = store && store.verified !== false && store.price;
   document.getElementById("pdStoreAvail").innerHTML = store
-    ? `Sold via <b>${storeLabel}</b>${details?.availability ? ` — ${details.availability}` : ""}${offer?.kind === "international" ? ` <span style="color:var(--gold-deep);font-weight:700;">— not sold locally, ships internationally</span>` : ""}`
+    ? `Sold via <b>${storeLabel}</b>${details?.availability ? ` — ${details.availability}` : ""}${offer?.kind === "international" ? ` <span style="color:var(--gold-deep);font-weight:700;">— not sold locally, ships internationally</span>` : ""}${offer?.kind === "pk-only" ? ` <span style="color:var(--gold-deep);font-weight:700;">— Daraz delivers within Pakistan only</span>` : ""}`
     : `Not currently available in your region.`;
   document.getElementById("pdPriceBlock").innerHTML = (hasVerifiedPrice
     ? `<div class="price-line" style="margin:10px 0;"><span class="now" style="font-size:1.4rem;">${store.price}</span>${store.oldPrice ? `<span class="old">${store.oldPrice}</span>` : ''}${discountPercent(store.price, store.oldPrice) ? `<span class="discount-badge">-${discountPercent(store.price, store.oldPrice)}%</span>` : ''}</div><p class="price-unverified" style="margin:0 0 10px;">Price may change — check current price on ${storeLabel || "the marketplace"} before buying.</p>`
     : `<p class="price-unverified" style="margin:10px 0;">Price not independently verified — check the current price on ${storeLabel || "the marketplace"} before buying.</p>`)
-    + (offer?.kind === "international" ? `<p class="price-unverified">International shipping/import charges may apply — check the total cost on ${storeLabel} before buying.</p>` : '');
+    + (offer?.kind === "international" ? `<p class="price-unverified">International shipping/import charges may apply — check the total cost on ${storeLabel} before buying.</p>` : '')
+    + (offer?.kind === "pk-only" ? `<p class="price-unverified">This item is sold on Daraz, which delivers inside Pakistan only. Useful mainly if you are buying for an address in Pakistan.</p>` : '');
   document.getElementById("pdSummary").textContent = shown.desc;
   document.getElementById("pdWhy").innerHTML = `<b>Why we recommend it:</b> ${shown.why || 'A solid, well-reviewed pick in this category.'}`;
 
