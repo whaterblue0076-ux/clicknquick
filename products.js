@@ -593,7 +593,7 @@ function resolveOffer(product, storeType){
   // Last resort: the exact product IS sold somewhere, just not through this visitor's usual
   // store. Show it honestly labeled as international, rather than a dead "unavailable" end.
   const anyStoreEntry = Object.entries(product.stores).find(([, s]) => s && s.available);
-  if (anyStoreEntry) return { product, store:anyStoreEntry[1], storeType:anyStoreEntry[0], kind:"international" };
+  if (anyStoreEntry) return { product, store:anyStoreEntry[1], storeType:anyStoreEntry[0], kind:(anyStoreEntry[0] === "daraz" ? "pk-only" : "international") };
 
   return null;
 }
