@@ -608,8 +608,4 @@ PRODUCTS.forEach(p => {
   const d = p.stores && p.stores.daraz;
   if (!d || !d.available) return;
   if (DARAZ_DEEP[p.id]) { d.url = DARAZ_DEEP[p.id]; return; }
-  try {
-    const m = d.url.match(/[?&]url=([^&]+)/);
-    if (m) d.url = decodeURIComponent(m[1]).split("?")[0];
-  } catch (e) {}
 });
