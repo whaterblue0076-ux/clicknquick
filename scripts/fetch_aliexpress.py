@@ -25,34 +25,46 @@ MIN_PRICE_PKR = 150     # skip junk/accessory listings
 # (search keywords, our category slug). Edit freely. A mix of cheap, mid and premium items,
 # spread over many categories. Each run starts at a different place in this list (rotates weekly).
 SEARCHES = [
-    ("portable neck fan", "appliances"),
-    ("wireless earbuds bluetooth", "electronics"),
-    ("car phone holder", "automotive"),
-    ("kitchen gadget organizer", "home-kitchen"),
-    ("led strip lights", "home-kitchen"),
-    ("usb c cable fast charging", "mobile-accessories"),
-    ("resistance bands set", "health-fitness"),
-    ("travel packing cubes", "travel-accessories"),
-    ("gel pens set stationery", "office-stationery"),
-    ("pet grooming brush", "pet-supplies"),
-    ("hair clips accessories", "beauty-personal-care"),
-    ("storage box organizer", "home-kitchen"),
-    ("mini projector portable", "electronics"),
-    ("massage gun deep tissue", "health-fitness"),
-    ("mechanical keyboard wireless", "computers-accessories"),
-    ("robot vacuum cleaner", "appliances"),
-    ("smart watch fitness band", "electronics"),
-    ("laptop backpack waterproof", "travel-accessories"),
-    ("cordless electric drill set", "tools-home-improvement"),
-    ("professional hair dryer", "beauty-personal-care"),
-    ("yoga mat non slip", "sports-outdoors"),
-    ("camping tent outdoor", "sports-outdoors"),
-    ("kids educational toys", "baby-kids"),
-    ("women handbag shoulder bag", "fashion"),
-    ("men running sneakers", "shoes"),
-    ("power bank 20000mah", "mobile-accessories"),
-    ("external ssd portable", "computers-accessories"),
-    ("car vacuum cleaner portable", "automotive"),
+    ("portable neck fan", "appliances", "fan"),
+    ("wireless earbuds bluetooth", "electronics", "earbuds"),
+    ("car phone holder", "automotive", "phone holder"),
+    ("kitchen gadget organizer", "home-kitchen", "organizer"),
+    ("led strip lights", "home-kitchen", "led strip"),
+    ("usb c cable fast charging", "mobile-accessories", "cable"),
+    ("resistance bands set", "health-fitness", "resistance band"),
+    ("travel packing cubes", "travel-accessories", "packing cube"),
+    ("gel pens set stationery", "office-stationery", "pen"),
+    ("pet grooming brush", "pet-supplies", "grooming"),
+    ("hair clips accessories", "beauty-personal-care", "hair clip"),
+    ("storage box organizer", "home-kitchen", "storage box"),
+    ("mini projector portable", "electronics", "projector"),
+    ("massage gun deep tissue", "health-fitness", "massage gun"),
+    ("mechanical keyboard wireless", "computers-accessories", "keyboard"),
+    ("robot vacuum cleaner", "appliances", "robot vacuum"),
+    ("smart watch fitness band", "electronics", "watch"),
+    ("laptop backpack waterproof", "travel-accessories", "backpack"),
+    ("cordless electric drill set", "tools-home-improvement", "drill"),
+    ("professional hair dryer", "beauty-personal-care", "hair dryer"),
+    ("yoga mat non slip", "sports-outdoors", "yoga mat"),
+    ("camping tent outdoor", "sports-outdoors", "tent"),
+    ("kids educational toys", "baby-kids", "toy"),
+    ("women handbag shoulder bag", "fashion", "handbag"),
+    ("men running sneakers", "shoes", "sneaker"),
+    ("power bank 20000mah", "mobile-accessories", "power bank"),
+    ("external ssd portable", "computers-accessories", "ssd"),
+    ("car vacuum cleaner portable", "automotive", "car vacuum"),
+    ("desk lamp led", "office-stationery", "desk lamp"),
+    ("water bottle insulated", "sports-outdoors", "water bottle"),
+    ("electric toothbrush", "beauty-personal-care", "toothbrush"),
+    ("phone case shockproof", "mobile-accessories", "phone case"),
+    ("air fryer", "appliances", "air fryer"),
+    ("baby stroller organizer", "baby-kids", "stroller"),
+    ("dog leash harness", "pet-supplies", "harness"),
+    ("webcam hd usb", "computers-accessories", "webcam"),
+    ("socket wrench tool kit", "tools-home-improvement", "tool kit"),
+    ("sunglasses polarized", "fashion", "sunglasses"),
+    ("slippers indoor", "shoes", "slipper"),
+    ("spice rack jars", "grocery-daily-essentials", "spice"),
 ]
 CHEAP_MAX = 1500        # PKR  (cheap tier below this)
 PREMIUM_MIN = 5000      # PKR  (premium tier above this)
@@ -100,13 +112,28 @@ def pct(v):
     except Exception:
         return 0.0
 
+LABELS = r"\b(choice|hot sale|hot|new arrival|free shipping|official store|2024|2025|2026|upgraded|best seller|bestseller)\b"
+HYPE_START = ("unlock", "elevate", "discover", "experience", "transform", "upgrade your", "enhance", "boost your", "achieve", "enjoy")
+
 def clean_title(t):
-    t = re.sub(r"\s+", " ", t or "").strip()
-    return (t[:95].rsplit(" ", 1)[0] + "…") if len(t) > 100 else t
+    t = re.sub(LABELS, " ", t or "", flags=re.I)
+    t = re.sub(r"[\u2605\u2606\U0001F300-\U0001FAFF]", " ", t)
+    t = re.split(r"\s[-|/]\s|[|,;]", t)[0]            # keep only the first phrase
+    t = re.sub(r"\s+", " ", t).strip(" -|,")
+    words = t.split()
+    if len(words) > 8:
+        t = " ".join(words[:8])
+    return t
+
+def title_ok(t):
+    t = clean_title(t)
+    return len(t.split()) >= 2 and not t.lower().startswith(HYPE_START)
 
 def good(p):
     title = (p.get("product_title") or "").lower()
     if any(re.search(r"\b" + re.escape(b) + r"\b", title) for b in BRAND_BLOCKLIST):
+        return False
+    if not title_ok(p.get("product_title")):
         return False
     try:
         price = float(p.get("target_sale_price"))
@@ -165,6 +192,11 @@ def add_products(new_items, root=ROOT, dry=False):
 def existing_ids(root=ROOT):
     return set(re.findall(r'"?id"?\s*:\s*"([^"]+)"', open(os.path.join(root, "products.js"), encoding="utf-8").read()))
 
+def existing_ali_names(root=ROOT):
+    """Lower-case names of AliExpress-only products already on the site (used to avoid same-type repeats)."""
+    txt = open(os.path.join(root, "products.js"), encoding="utf-8").read()
+    return [n.lower() for n in re.findall(r'"?id"?\s*:\s*"ali-[^"]+".*?"?name"?\s*:\s*"([^"]+)"', txt)]
+
 def main():
     dry = "--dry-run" in sys.argv
     key, secret = (os.environ.get("ALI_APP_KEY") or "").strip(), (os.environ.get("ALI_APP_SECRET") or "").strip()
@@ -172,14 +204,18 @@ def main():
     if not key or not secret:
         sys.exit("Missing ALI_APP_KEY / ALI_APP_SECRET environment variables.")
     have = existing_ids()
+    names = existing_ali_names()
     order = len(have) + 100
     week = int(time.time() // (7 * 86400))
     shift = (week * 5) % len(SEARCHES)
     searches = SEARCHES[shift:] + SEARCHES[:shift]          # different starting point every week
     pool, seen = [], set()
-    for kw, cat in searches:
+    for kw, cat, typ in searches:
         if len(pool) >= 60:
             break
+        if any(typ in n for n in names):
+            print("skip '%s': an AliExpress '%s' product is already on the site" % (kw, typ))
+            continue
         try:
             resp = call_api("aliexpress.affiliate.product.query", {
                 "keywords": kw, "page_no": 1, "page_size": 40, "sort": "LAST_VOLUME_DESC",
@@ -196,7 +232,7 @@ def main():
             pid = "ali-" + str(p.get("product_id"))
             if pid in have or pid in seen or not good(p):
                 continue
-            seen.add(pid); pool.append((p, cat)); taken += 1
+            seen.add(pid); pool.append((p, cat, typ)); taken += 1
             if taken >= PER_SEARCH:
                 break
         print("'%s': %d candidates" % (kw, taken))
@@ -205,21 +241,22 @@ def main():
         price = float(p.get("target_sale_price"))
         return "cheap" if price < CHEAP_MAX else ("premium" if price >= PREMIUM_MIN else "mid")
     buckets = {"mid": [], "cheap": [], "premium": []}
-    for p, cat in pool:
-        buckets[tier(p)].append((p, cat))
-    picked, per_cat = [], {}
+    for p, cat, typ in pool:
+        buckets[tier(p)].append((p, cat, typ))
+    picked, per_cat, used_types = [], {}, set()
     progress = True
     while len(picked) < MAX_NEW and progress:
         progress = False
         for t in ("mid", "cheap", "premium"):
             if len(picked) >= MAX_NEW:
                 break
-            for i, (p, cat) in enumerate(buckets[t]):
-                if per_cat.get(cat, 0) < MAX_PER_CATEGORY:
+            for i, (p, cat, typ) in enumerate(buckets[t]):
+                if per_cat.get(cat, 0) < MAX_PER_CATEGORY and typ not in used_types:
                     buckets[t].pop(i)
                     order += 1
                     picked.append(to_record(p, cat, order))
                     per_cat[cat] = per_cat.get(cat, 0) + 1
+                    used_types.add(typ)
                     print("  + [%s] %s" % (t, picked[-1][1][:70]))
                     progress = True
                     break
