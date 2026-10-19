@@ -609,3 +609,39 @@ PRODUCTS.forEach(p => {
   if (!d || !d.available) return;
   if (DARAZ_DEEP[p.id]) { d.url = DARAZ_DEEP[p.id]; return; }
 });
+/* AliExpress cleanup: saaf titles, dohre hatao, category theek */
+const ALI_REMOVE = ["ali-1005010043992813", "ali-1005007696406001"];
+const ALI_CAT = {
+  "ali-1005009960201825": "beauty-personal-care",
+  "ali-1005007170841697": "tools-home-improvement",
+  "ali-1005010439276720": "tools-home-improvement"
+};
+const ALI_FIX = {
+  "ali-1005006995184446": "Neck Bladeless Fan (USB Rechargeable)",
+  "ali-1005007431129955": "Lenovo GM2 Pro Wireless Earbuds (Low Latency)",
+  "ali-1005006678116483": "Lenovo LP40 Pro Wireless Earbuds",
+  "ali-1005006861792368": "Magnetic Metal Plates for Car Phone Holder",
+  "ali-1005006861966091": "Finger Ring Phone Holder (360° Rotating)",
+  "ali-1005007306730122": "Food Bag Sealing Clip Stick",
+  "ali-1005006354475137": "Silicone Sink Tray with Drain for Sponge & Soap",
+  "ali-1005010439276720": "Ultra Thin 12V/24V LED Power Supply Adapter",
+  "ali-1005006861822286": "Plastic Spice Jars Set with Shakers",
+  "ali-1005007170841697": "USB RGB LED Strip with Bluetooth Control",
+  "ali-1005010228529636": "ThundeaL TD80 Pro Full HD Smart Projector",
+  "ali-1005007567145990": "Foldable Compression Packing Cubes",
+  "ali-1005010044071639": "Braided USB-C Fast Charging Cable",
+  "ali-1005007923305870": "Electric Massage Gun for Neck & Body",
+  "ali-1005012471192217": "HANLINYUE Free2 Mini Bluetooth Page Flipper Keyboard",
+  "ali-1005007957947739": "Resistance Bands Set for Strength Training",
+  "ali-1005007043647896": "LIGE Waterproof Smart Band Watch",
+  "ali-1005009960201825": "Cordless Electric Nail File Manicure Pedicure Kit"
+};
+for (let i = PRODUCTS.length - 1; i >= 0; i--) {
+  if (ALI_REMOVE.includes(PRODUCTS[i].id)) PRODUCTS.splice(i, 1);
+}
+PRODUCTS.forEach(p => {
+  if (ALI_FIX[p.id]) p.name = ALI_FIX[p.id];
+  if (ALI_CAT[p.id]) p.category = ALI_CAT[p.id];
+  if (/Lenovo|ThundeaL|LIGE|HANLINYUE/.test(p.name) && p.why) p.why = p.why.replace(" (no brand)", "");
+});
+
